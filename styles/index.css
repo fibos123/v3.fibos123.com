@@ -1,0 +1,36 @@
+@tailwind base;
+
+/* Write your own custom base styles here */
+
+/* Start purging... */
+@tailwind components;
+/* Stop purging. */
+
+/* Write you own custom component styles here */
+.btn-blue {
+  @apply bg-blue-500 text-white font-bold py-2 px-4 rounded;
+}
+
+/* Start purging... */
+@tailwind utilities;
+/* Stop purging. */
+
+/* Your own custom utilities */
+
+.dark {
+  background: url("/bg.jpg") center no-repeat;
+  background-size: cover;
+  color: white;
+}
+
+.dark .text-gray-500, .dark .text-indigo-500, .dark nav .text-indigo-600 {
+  color: white;
+}
+
+.dark>.bg-gray-100, .dark>.bg-white {
+  background-color: transparent;
+}
+
+.dark a:hover {
+  color: #999;
+}
