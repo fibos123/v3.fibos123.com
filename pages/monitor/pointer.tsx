@@ -4,7 +4,7 @@ import { PointerList } from '../../interfaces/PointerList'
 import Pointer from '../../models/Pointer';
 import _ from 'lodash'
 import utils from '../../utils';
-import { JsonView } from 'json-view-for-react'
+import ReactJson from 'react-json-view'
 import Link from 'next/link'
 
 interface AccessPoints {
@@ -155,7 +155,7 @@ export default function IndexPage() {
                 <h3 className="text-lg leading-6 font-medium text-gray-900 pb-2">可用接入点列表</h3>
                 <div className="sm:flex sm:items-start">
                   <pre className="h-64 w-full overflow-auto text-sm">
-                    <JsonView obj={accessPoints} />
+                    {accessPoints !== undefined && <ReactJson src={accessPoints} displayDataTypes={false}  />}
                   </pre>
                 </div>
               </div>
