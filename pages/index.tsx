@@ -1,12 +1,12 @@
 import Layout from '../components/Layout'
-import { ISites } from '../interfaces/Sites'
+import { Site } from '../interfaces/Site'
 import { useEffect, useState } from 'react'
 import axios from "axios";
 import _ from "lodash";
 import config from "../config";
 
 export default function IndexPage() {
-  const [sites, setSitesn] = useState<ISites>([])
+  const [sites, setSitesn] = useState<Site[]>([])
   useEffect(() => {
     async function fetchData() {
       const response = await axios.post(config.rpc_get_table_rows, JSON.stringify({
@@ -52,7 +52,7 @@ export default function IndexPage() {
             <section key={item.name} className="bg-white p-4 rounded mb-4">
               <div className="border-b text-lg pb-4 sm:pl-2">
                 {item.icon &&
-                  <i className={"pr-1 " + item.icon}></i>
+                  <i className={"pr-2 " + item.icon}></i>
                 }
                 {item.name}
               </div>

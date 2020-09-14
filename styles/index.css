@@ -1,21 +1,35 @@
 @tailwind base;
-
 /* Write your own custom base styles here */
 
 /* Start purging... */
+
 @tailwind components;
 /* Stop purging. */
 
 /* Write you own custom component styles here */
+
 .btn-blue {
   @apply bg-blue-500 text-white font-bold py-2 px-4 rounded;
 }
 
 /* Start purging... */
+
 @tailwind utilities;
 /* Stop purging. */
 
 /* Your own custom utilities */
+
+tr>* {
+  @apply whitespace-no-wrap
+}
+
+tbody tr:nth-child(even) {
+  @apply bg-gray-100
+}
+
+tbody tr:hover {
+  @apply bg-gray-200
+}
 
 .dark {
   background: url("/bg.jpg") center no-repeat;
