@@ -52,7 +52,7 @@ const Header = () => {
                     />
                   </g>
                 </svg>
-              </Link >
+              </Link>
               <div className="-mr-2 flex items-center sm:hidden">
                 <button
                   onClick={() => setIsOpen(true)}

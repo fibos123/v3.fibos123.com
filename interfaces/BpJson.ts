@@ -1,6 +1,6 @@
 export interface BpJson {
   producer_account_name: string;
-  org: Org;
+  org: any[];
   nodes: Node[];
 }
 

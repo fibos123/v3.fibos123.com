@@ -6,6 +6,7 @@ import { Row as GlobalRow } from "../interfaces/Global";
 import { Info } from "../interfaces/Info";
 import { Row as ProducerRow } from "../interfaces/Producer";
 import { Row as ProducerJsonRow } from "../interfaces/ProducerJson";
+import { Account } from "../interfaces/Account";
 
 class Chain {
 
@@ -44,7 +45,7 @@ class Chain {
     };
   }
 
-  static getInfo = async (): Promise<Info[]> => {
+  static getInfo = async (): Promise<Info> => {
     const response = await axios.get(config.rpc_get_info)
     const data = _.get(response, "data", {})
     return data
@@ -119,9 +120,7 @@ class Chain {
       const claimRewards = this.getClaimRewards(item.producer, global, index + 1)
       item.claim_rewards_total = claimRewards.total
       item.claim_rewards_unreceived = claimRewards.unreceived
-      item.weight_percent = parseFloat(((parseInt(item.producer.total_votes) / parseInt(global.total_producer_vote_weight)) * 100).toFixed(3))
-      item.urlFull = ""
-      item.urlSimple = ""
+      item.weight_percent = (parseInt(item.producer.total_votes) / parseInt(global.total_producer_vote_weight)) * 100
       try {
         const url = new URL(item.producer.url).origin;
         if (url) {
@@ -130,7 +129,6 @@ class Chain {
         }
       } catch (err) { console.info(err) }
 
-      item.json = undefined
       const jsonFile = producerJson.find(item2 => item2.owner === item.owner)
       if (jsonFile) {
         try {

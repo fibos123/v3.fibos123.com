@@ -1,22 +1,66 @@
 import Layout from '../../components/Layout'
-import { BpList } from '../../interfaces/BpList'
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import Chain from "../../models/Chain";
+import { BpList } from '../../interfaces/BpList'
 import { Row as GlobalRow } from "../../interfaces/Global";
 import { Row as ProducerRow } from "../../interfaces/Producer";
 import { Row as ProducerJsonRow } from "../../interfaces/ProducerJson";
+import utils from '../../utils'
 
 export default function IndexPage() {
-  const card: any[] = []
 
+  const [cardList, setCardList] = useState([
+    {
+      name: "生产者",
+      value: "",
+    },
+    {
+      name: "出块时间",
+      value: "",
+    },
+    {
+      name: "最新区块",
+      value: "",
+    },
+    {
+      name: "不可逆区块",
+      value: "",
+    }
+  ])
   const [bpList, setBpList] = useState<BpList[]>([])
   useEffect(() => {
-    async function fetchData() {
+    async function fetchCardList() {
+      const data = await Chain.getInfo()
+      const cardList = [
+        {
+          name: "生产者",
+          value: data.head_block_producer,
+        },
+        {
+          name: "出块时间",
+          value: utils.formatDate(data.head_block_time + "Z")
+        },
+        {
+          name: "最新区块",
+          value: utils.formatNumber(data.head_block_num),
+        },
+        {
+          name: "不可逆区块",
+          value: utils.formatNumber(data.last_irreversible_block_num),
+        }
+      ];
+      setCardList(cardList)
+    };
+    async function fetchBpList() {
       const [producers, producerJson, global] = await Promise.all<ProducerRow[], ProducerJsonRow[], GlobalRow>([Chain.getProducers(), Chain.getProducerJson(), Chain.getGlobal()])
       const bpList = Chain.generateBpList(producers, producerJson, global)
       setBpList(bpList)
     };
-    fetchData();
+    fetchCardList();
+    fetchBpList();
+    let timer = setInterval(fetchCardList, 1000);
+    return () => clearInterval(timer);
   }, [])
 
   return (
@@ -27,7 +71,7 @@ export default function IndexPage() {
 
           <div className="flex flex-wrap gap-4 text-center">
             {
-              card.map(item =>
+              cardList.map(item =>
                 <div key={item.name} className="flex-1 rounded bg-white p-4">
                   <h2 className="text-gray-600">{item.name}</h2>
                   <div className="text-lg h-6 whitespace-no-wrap">{item.value}</div>
@@ -40,25 +84,23 @@ export default function IndexPage() {
             <table className="w-full my-2">
               <thead>
                 <tr>
-                  <th
-                    className="px-6 py-3 bg-gray-50 text-left text-xs text-gray-500 tracking-wider"
-                  >#</th>
-                  <th className="py-3 bg-gray-50 text-center text-xs text-gray-500 tracking-wider">节点标识</th>
-                  <th className="px-6 py-3 bg-gray-50 text-left text-xs text-gray-500 tracking-wider">节点名称</th>
-                  <th className="px-6 py-3 bg-gray-50 text-left text-xs text-gray-500 tracking-wider">状态</th>
-                  <th className="px-6 py-3 bg-gray-50 text-left text-xs text-gray-500 tracking-wider">得票率</th>
-                  <th className="px-6 py-3 bg-gray-50 text-left text-xs text-gray-500 tracking-wider">每日收益</th>
-                  <th className="px-6 py-3 bg-gray-50 text-left text-xs text-gray-500 tracking-wider">未领取收益</th>
-                  <th className="px-6 py-3 bg-gray-50 text-left text-xs text-gray-500 tracking-wider">网址</th>
-                  <th className="px-6 py-3 bg-gray-50 text-left text-xs text-gray-500 tracking-wider">操作</th>
+                  <th className="text-center w-6">#</th>
+                  <th className="text-center w-32">节点标识</th>
+                  <th>节点名称</th>
+                  <th>状态</th>
+                  <th>得票率</th>
+                  <th>每日收益</th>
+                  <th>未领取收益</th>
+                  <th>网址</th>
+                  <th>操作</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
 
                 {
                   bpList.map((item, index) =>
-                    <tr key={index} className="hover:bg-gray-200">
-                      <td className="px-6 py-4 text-gray-500">{index + 1}</td>
+                    <tr key={index}>
+                      <td className="text-gray-500 text-center">{index + 1}</td>
                       <td className="px-2 py-2 text-center">
                         {
                           item.logo &&
@@ -68,11 +110,11 @@ export default function IndexPage() {
                           ></span>
                         }
                       </td>
-                      <td className="px-6 py-4">
-                        <div className="text-gray-900">{item.candidate_name}</div>
+                      <td>
+                        <div>{item.candidate_name}</div>
                         <div className="text-gray-500">{item.owner}</div>
                       </td>
-                      <td className="px-6 py-4">
+                      <td>
                         {
                           {
                             "active": <span
@@ -84,34 +126,36 @@ export default function IndexPage() {
                           }[(index + 1 <= 21) ? "active" : "waiting"]
                         }
                       </td>
-                      <td className="px-6 py-4">
-                        <div className="text-gray-900">{item.weight_percent} %</div>
-                        <div className="text-gray-500 text-sm">{item.staked} FO</div>
+                      <td>
+                        <div>{utils.formatPercent(item.weight_percent)} %</div>
+                        <div className="text-gray-500 text-sm">{utils.formatNumber(item.staked)} FO</div>
                       </td>
-                      <td className="px-6 py-4 text-gray-500">{item.claim_rewards_total} FO</td>
+                      <td className="text-gray-500">{utils.formatNumber(item.claim_rewards_total)} FO</td>
                       <td
-                        className={"px-6 py-4 " + (item.claim_rewards_unreceived ? 'text-green-500 font-bold' : 'text-gray-500')}
-                      >{item.claim_rewards_unreceived} FO</td>
-                      <td className="px-6 py-4 text-gray-500">
+                        className={"" + (item.claim_rewards_unreceived ? 'text-green-500 font-bold' : 'text-gray-500')}
+                      >{utils.formatNumber(item.claim_rewards_unreceived)} FO</td>
+                      <td className="text-gray-500">
                         <a
                           href={item.urlFull}
                           target="_blank"
                           className="text-indigo-500 hover:text-indigo-800 transition duration-150 ease-in-out"
                         >{item.urlSimple}</a>
                       </td>
-                      <td className="px-6 py-4">
-                        <a
-                          href={'/bp/' + item.owner}
-                          className="text-indigo-500 hover:text-indigo-800 transition duration-150 ease-in-out"
-                        >详情</a>
+                      <td>
+                        <Link href={'/bp/detail?account=' + item.owner}>
+                          <a
+                            href={'/bp/detail?account=' + item.owner}
+                            className="text-indigo-500 hover:text-indigo-800 transition duration-150 ease-in-out"
+                          >详情</a>
+                        </Link>
                       </td>
                     </tr>
                   )}
-              </tbody >
-            </table >
-          </div >
-        </div >
-      </div >
-    </Layout >
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </Layout>
   )
 }
