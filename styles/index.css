@@ -2,39 +2,41 @@
 @tailwind components;
 @tailwind utilities;
 
-table tr>* {
-  @apply whitespace-no-wrap
+table tr > * {
+  @apply whitespace-nowrap;
 }
 
 table thead th {
-  @apply px-2 py-3 text-left text-xs text-gray-500 tracking-wider
+  @apply px-2 py-3 text-left text-xs text-gray-500 tracking-wider;
 }
 
 table tbody tr:nth-child(even) {
-  @apply bg-gray-100
+  @apply bg-gray-100;
 }
 
 table tbody tr:hover {
-  @apply bg-gray-200
+  @apply bg-gray-200;
 }
 
 table tbody th,
-table tbody td
- {
-  @apply px-2 py-3
+table tbody td {
+  @apply px-2 py-3;
 }
 
 .dark {
-  background: url("/bg.jpg") center no-repeat;
+  background: url('/bg.jpg') center no-repeat;
   background-size: cover;
   color: white;
 }
 
-.dark .text-gray-500, .dark .text-indigo-500, .dark nav .text-indigo-600 {
+.dark .text-gray-500,
+.dark .text-indigo-500,
+.dark nav .text-indigo-600 {
   color: white;
 }
 
-.dark>.bg-gray-100, .dark>.bg-white {
+.dark > .bg-gray-100,
+.dark > .bg-white {
   background-color: transparent;
 }
 
